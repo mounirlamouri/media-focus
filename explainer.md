@@ -20,6 +20,7 @@ system.
 * As a user, I want to play a game with sound effects while listening to content from _Foo Player_.
 * As a user, I want the content I am listening to showing up in my device's lockscreen with information about the
 content such as name of artist/author, cover, etc.
+* As a user, I want my "play" media key to start music playback in the active tab if no other app or tab is playing music.
 
 ## Proposal
 
@@ -29,12 +30,12 @@ content such as name of artist/author, cover, etc.
 * When a media lose its focus state, it must be stopped.
 * Following platform conventions, a focused media might be paused and resumed at any time by the UA.
 * When a media is focused, all media key events should be sent to the HTMLMediaElement even if its document isn't
-focused. In the case of AudioContext, the event sholud be sent to its document.
+focused. In the case of AudioContext, the event should be sent to its document.
 
 ### Backward compatibility
 
 * When played, if they match some heuristics, ```<audio>``` and ```<video>``` become media focused. For example,
-heuristic might include the media length to prevent short audio files to take media focus out of another media.
+heuristic might include the media length to prevent short audio files (intended as sound effects or notifications) to take media focus out of another media.
 
 ### Channels
 
@@ -42,8 +43,7 @@ A media channel defines the priority of the media and some rules around it like 
 played or when it should be paused or ducked. This proposal doesn't yet list a channel list but considers Mozilla's
 AudioChannels to be a good start: https://developer.mozilla.org/en-US/docs/Web/API/AudioChannels_API
 
-In addition to the list that Mozilla has, a ```default``` state needs to be created which would be a undefined
-behaviour for backward compatibility. The ```normal``` state might need to be renamed. The ```content``` state is the
+In addition to the list that Mozilla has, a ```default``` state needs to be created which would allow the UA to treat the source as `normal` or `content` based on heuristics. The ```normal``` state might need to be renamed. The ```content``` state is the
 one that would get media focus.
 
 ### Media metadata
@@ -67,3 +67,21 @@ partial interface HTMLMediaElement {
   Promise<MediaMetadata> getMetadata();
 };
 ```
+
+## Compatibility with other audio sources
+
+This proposal intentionally doesn't provide specific support for legacy plugins such as Flash. However, it would be possible for a silent `AudioContext` to act as a proxy.
+
+```js
+// Silent audio context to receive focus
+var context = new AudioContext();
+context.channel = 'content';
+
+document.addEventListener('keyup', function(event) {
+  if (event.key == 'MediaPlayPause') {
+    flashObj.playPause();
+  }
+});
+```
+
+The Flash movie would call `suspend`/`resume` on the `AudioContext` to reflect its own playback state, or set the channel to `normal` to release focus.
