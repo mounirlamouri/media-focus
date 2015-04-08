@@ -29,7 +29,7 @@ content such as name of artist/author, cover, etc.
 * When a media lose its focus state, it must be stopped.
 * Following platform conventions, a focused media might be paused and resumed at any time by the UA.
 * When a media is focused, all media key events should be sent to the HTMLMediaElement even if its document isn't
-focused. In the case of AudioContext, the event sholud be sent to its document.
+focused. In the case of AudioContext, the event should be sent to its document.
 
 ### Backward compatibility
 
@@ -53,8 +53,8 @@ and set metadata on their media streams. Reading metadata will allow them to kno
 and show this information on the page if needed. Setting metadata will allow web pages to set additional information
 about the media. It will also allow web pages to set metadata on ```AudioContext```.
 
-Their is no fleshed out API but it would likely look like:  
-```js
+There is no fleshed out API but it would likely look like:  
+```WebIDL
 interface MediaMetadata {
   attribute DOMString title;
   attribute DOMString artist;
